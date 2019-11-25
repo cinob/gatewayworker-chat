@@ -2,7 +2,7 @@
 namespace app\index\controller;
 
 use think\facade\Request;
-use GatewayClient\Gateway;
+use app\common\model\Workerman;
 
 class Index 
 {
@@ -16,13 +16,9 @@ class Index
     	$client_id = Request::param('cid');
     	$uid = Request::param('uid');
     	$message = Request::param('message', '你好');
-    	Gateway::$registerAddress = '127.0.0.1:1238';
-    	if ($uid) {
-    		if ($client_id) {
-    			Gateway::bindUid($client_id, $uid);
-    		}
-    		Gateway::sendToUid($uid, $message);
-    	}
+        $ws = new Workerman;
+        $ws->bindUid($client_id, $uid);
+        $ws->sendToSingle($uid, $message);
         return '发送成功';
     }
 }

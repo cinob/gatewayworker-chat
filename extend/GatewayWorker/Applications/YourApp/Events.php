@@ -1,18 +1,5 @@
 <?php
 /**
- * This file is part of workerman.
- *
- * Licensed under The MIT License
- * For full copyright and license information, please see the MIT-LICENSE.txt
- * Redistributions of files must retain the above copyright notice.
- *
- * @author walkor<walkor@workerman.net>
- * @copyright walkor<walkor@workerman.net>
- * @link http://www.workerman.net/
- * @license http://www.opensource.org/licenses/mit-license.php MIT License
- */
-
-/**
  * 用于检测业务代码死循环或者长时间阻塞等问题
  * 如果发现业务卡死，可以将下面declare打开（去掉//注释），并执行php start.php reload
  * 然后观察一段时间workerman.log看是否有process_timeout异常
@@ -28,18 +15,23 @@ use \GatewayWorker\Lib\Gateway;
  */
 class Events
 {
+    private static $secret = 'cinob';
+
     /**
      * 当客户端连接时触发
      * 如果业务不需此回调可以删除onConnect
      * 
      * @param int $client_id 连接id
      */
-    public static function onConnect($client_id)
+    public static function onConnect(string $client_id): void
     {
+        $rand = rand(1111, 9999);
         // 向当前client_id发送数据
-        Gateway::sendToClient($client_id, "Hello $client_id\r\n");
-        // 向所有人发送
-        Gateway::sendToAll("$client_id login\r\n");
+        Gateway::sendToClient($client_id, json_encode([
+            'cid' => $client_id,
+            'status' => $rand,
+            'sign' => hash('sha256', $client_id . $rand . self::$secret)
+        ]));
     }
     
    /**
@@ -47,7 +39,7 @@ class Events
     * @param int $client_id 连接id
     * @param mixed $message 具体消息
     */
-   public static function onMessage($client_id, $message)
+   public static function onMessage(string $client_id, string $message): void
    {
         $message = $message ?: json_decode($message, true);
         if (!$message) {
@@ -59,25 +51,22 @@ class Events
                 # code...
                 break;
             
-            case 'speak':
+            case 'ping':
             
-                break;
-            default:
-                # code...
                 break;
         }
 
-        // 向所有人发送 
-        Gateway::sendToAll("$client_id said $message\r\n");
+        // 向所有人发送
+        Gateway::sendToAll($message);
    }
    
    /**
     * 当用户断开连接时触发
     * @param int $client_id 连接id
     */
-   public static function onClose($client_id)
+   public static function onClose(string $client_id): void
    {
-       // 向所有人发送 
-       GateWay::sendToAll("$client_id logout\r\n");
+        // 向所有人发送 
+        GateWay::sendToAll("$client_id logout\r\n");
    }
 }
