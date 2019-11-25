@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+  <style>
+    #app {
+      max-width: 960px;
+      margin: 0 auto;
+      padding-top: 50px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="row">
+      <div class="col-xs-4">
+        <input type="text" class="form-control" placeholder="websocket地址" v-model="url">
+      </div>
+      <div class="col-xs-2">
+        <button type="button" class="btn btn-primary" @click="connect">连接服务器</button>
+      </div>
+    </div>
+    <hr>
+    <div class="row">
+      <div class="col-xs-4">
+        <input type="text" class="form-control" placeholder="client_id" v-model="cid">
+      </div>
+      <div class="col-xs-4">
+        <input type="text" class="form-control" placeholder="我的uid"  v-model="uid">
+      </div>
+      <div class="col-xs-2">
+        <button type="button" class="btn btn-primary" @click="bind">绑定uid</button>
+      </div>
+    </div>
+    <hr>
+    <div class="row">
+      <div class="col-xs-2">
+        <input type="text" class="form-control" placeholder="接收人uid"  v-model="touid">
+      </div>
+      <div class="col-xs-6">
+        <textarea class="form-control" rows="3" v-model="msg"></textarea>
+      </div>
+      <div class="col-xs-2">
+        <button type="button" class="btn btn-primary" @click="sendMsg">发送消息</button>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  const app = new Vue({
+    el: '#app',
+    data: {
+      url: 'ws://127.0.0.1:8282',
+      ws: '',
+      cid: '',
+      uid: '',
+      touid: '',
+      msg: ''
+    },
+    methods: {
+      connect: function () {
+        if (typeof(WebSocket) === "undefined") {
+          alert("您的浏览器不支持socket")
+        } else {
+          // 实例化socket
+          this.ws = new WebSocket(this.url)
+          // 监听socket连接
+          this.ws.onopen = this.open
+          // 监听socket错误信息
+          this.ws.onerror = this.error
+          // 监听socket消息
+          this.ws.onmessage = this.getMessage
+        }
+      },
+      open: function () {
+        console.log("socket连接成功")
+      },
+      error: function () {
+        console.log("连接错误")
+      },
+      getMessage: function (msg) {
+        let data = JSON.parse(msg.data);
+        if (data.type === 'login') {
+          this.cid = data.cid
+        } else {
+          console.log(data)
+        }
+      },
+      send: function () {
+        this.ws.send(params)
+      },
+      close: function () {
+        console.log("socket已经关闭")
+      },
+      bind: function () {
+        if (this.uid && this.cid) {
+          _t = this
+          $.ajax({
+            url: '/index/index/ws',
+            data: {cid: _t.cid, uid: _t.uid, message: '绑定成功'}
+          })
+        }
+      },
+      sendMsg: function () {
+        if (this.touid && this.msg) {
+          _t = this
+          $.ajax({
+            url: '/index/index/ws',
+            data: {uid: _t.touid, message: _t.msg}
+          })
+        }
+      }
+    },
+    destroyed () {
+      // 销毁监听
+      this.ws.onclose = this.close
+    }
+  })
+</script>
+</html>

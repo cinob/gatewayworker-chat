@@ -30,6 +30,7 @@ class Events
         Gateway::sendToClient($client_id, json_encode([
             'cid' => $client_id,
             'status' => $rand,
+            'type' => 'login',
             'sign' => hash('sha256', $client_id . $rand . self::$secret)
         ]));
     }
