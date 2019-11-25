@@ -8,7 +8,7 @@
 下载或clone项目到本地
 
 ~~~
-https://github.com/cinob/gatewayworker-chat.git
+git clone https://github.com/cinob/gatewayworker-chat.git
 ~~~
 
 进入项目目录 使用composer安装gatewayworker相关扩展包
