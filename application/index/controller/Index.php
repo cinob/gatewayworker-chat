@@ -15,13 +15,14 @@ class Index extends Controller
     public function ws()
     {
     	$client_id = Request::param('cid');
-    	$uid = Request::param('uid');
+        $uid = Request::param('uid');
+    	$touid = Request::param('touid');
     	$message = Request::param('message', '你好');
         $ws = new Workerman;
         if ($client_id) {
             $ws->bindUid($client_id, $uid);
         }
-        $ws->sendToSingle($uid, '用户' . $uid . ' : ' .$message);
+        $ws->sendToSingle($touid, '用户' . $uid . ' : ' .$message);
         return '发送成功';
     }
 }

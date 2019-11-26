@@ -108,16 +108,16 @@
           _t = this
           $.ajax({
             url: '/index/index/ws',
-            data: {cid: _t.cid, uid: _t.uid, message: '绑定成功'}
+            data: {cid: _t.cid, uid: _t.uid, touid: _t.uid, message: '绑定成功'}
           })
         }
       },
       sendMsg: function () {
-        if (this.touid && this.msg) {
+        if (this.uid && this.touid && this.msg) {
           _t = this
           $.ajax({
             url: '/index/index/ws',
-            data: {uid: _t.touid, message: _t.msg},
+            data: {uid: _t.uid, touid: _t.touid, message: _t.msg},
             success: function (res) {
               _t.msg = ''
             }
