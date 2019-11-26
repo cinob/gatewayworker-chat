@@ -55,6 +55,7 @@
   const app = new Vue({
     el: '#app',
     data: {
+      url: '',
       ws: '',
       cid: '',
       uid: '',
@@ -67,7 +68,7 @@
           alert("您的浏览器不支持socket")
         } else {
           // 实例化socket
-          this.ws = new WebSocket('ws://' + window.location.host + ':8282')
+          this.ws = new WebSocket('ws://' + this.url)
           // 监听socket连接
           this.ws.onopen = this.open
           // 监听socket错误信息
@@ -117,6 +118,9 @@
           })
         }
       }
+    },
+    mounted () {
+      this.url = window.location.host
     },
     destroyed () {
       // 销毁监听
