@@ -21,7 +21,7 @@ class Index extends Controller
         if ($client_id) {
             $ws->bindUid($client_id, $uid);
         }
-        $ws->sendToSingle($uid, $message);
+        $ws->sendToSingle($uid, '用户' . $uid . ' : ' .$message);
         return '发送成功';
     }
 }
