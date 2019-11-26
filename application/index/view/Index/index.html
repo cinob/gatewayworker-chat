@@ -84,10 +84,11 @@
         console.log("连接错误")
       },
       getMessage: function (msg) {
-        let data = JSON.parse(msg.data);
+        let data = JSON.parse(msg.data)
         if (data.type === 'login') {
           this.cid = data.cid
         } else if (data.type === 'msg') {
+          console.clear()
           console.log(data.info)
         }
       },

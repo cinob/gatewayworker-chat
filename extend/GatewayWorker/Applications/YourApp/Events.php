@@ -68,6 +68,6 @@ class Events
    public static function onClose(string $client_id): void
    {
         // 向所有人发送 
-        GateWay::sendToAll("$client_id logout\r\n");
+        // GateWay::sendToAll("$client_id logout\r\n");
    }
 }
