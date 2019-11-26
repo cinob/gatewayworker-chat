@@ -43,7 +43,7 @@
         <input type="text" class="form-control" placeholder="接收人uid"  v-model="touid">
       </div>
       <div class="col-xs-6">
-        <input type="text" class="form-control"@keyup.enter="sendMsg" v-model="msg">
+        <input type="text" class="form-control" @keyup.enter="sendMsg" v-model="msg">
       </div>
       <div class="col-xs-2" v-show="hide">
         <button type="button" class="btn btn-primary" @click.enter="sendMsg">发送消息</button>
@@ -52,8 +52,17 @@
         <button type="button" class="btn" @click="toggleShow">hide</button>
       </div>
     </div>
+    <hr v-show="hide">
+    <div class="row">
+      <div class="col-xs-6" v-show="hide">
+        <input type="text" class="form-control" @keyup.enter="changeIframe" v-model="iframe">
+      </div>
+      <div class="col-xs-2" v-show="hide">
+        <button type="button" class="btn btn-primary" @click.enter="changeIframe">更改网址</button>
+      </div>
+    </div>
   </div>
-  <iframe scrolling="yes" src="https://www.baidu.com" width="100%" height="800px"></iframe>
+  <iframe id="if" scrolling="yes" src="" width="100%" height="800px"></iframe>
 </body>
 <script>
   const app = new Vue({
@@ -65,7 +74,8 @@
       uid: '',
       touid: '',
       msg: '',
-      hide: true
+      hide: true,
+      iframe: 'http://doc2.workerman.net'
     },
     methods: {
       connect: function () {
@@ -126,6 +136,9 @@
       },
       toggleShow: function () {
         this.hide = !this.hide
+      },
+      changeIframe: function () {
+        document.getElementById('if').src = this.iframe
       }
     },
     computed: {
@@ -138,6 +151,7 @@
     },
     mounted () {
       this.url = window.location.host + ':8282'
+      this.changeIframe
     },
     destroyed () {
       // 销毁监听
