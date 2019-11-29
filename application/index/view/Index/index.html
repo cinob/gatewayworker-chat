@@ -62,7 +62,9 @@
       </div>
     </div>
   </div>
-  <iframe id="if" scrolling="yes" src="" width="100%" height="800px"></iframe>
+  <div class="embed-responsive embed-responsive-16by9">
+    <iframe class="embed-responsive-item" id="if" src=""></iframe>
+  </div>
 </body>
 <script>
   const app = new Vue({
@@ -74,7 +76,7 @@
       uid: '',
       touid: '',
       msg: '',
-      hide: true,
+      hide: false,
       iframe: 'http://doc2.workerman.net'
     },
     methods: {
