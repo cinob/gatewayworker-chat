@@ -7,6 +7,7 @@
   <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+  <script src="https://unpkg.com/qiniu-js@2.5.5/dist/qiniu.min.js"></script>
   <style>
     #app {
       max-width: 960px;
@@ -55,6 +56,15 @@
     <hr v-show="hide">
     <div class="row">
       <div class="col-xs-6" v-show="hide">
+        <input type="file" @change="changeFile" class="form-control">
+      </div>
+      <div class="col-xs-2" v-show="hide">
+        <button type="button" class="btn btn-primary" @click.enter="sendFile">上传文件</button>
+      </div>
+    </div>
+    <hr v-show="hide">
+    <div class="row">
+      <div class="col-xs-6" v-show="hide">
         <input type="text" class="form-control" @keyup.enter="changeIframe" v-model="iframe">
       </div>
       <div class="col-xs-2" v-show="hide">
@@ -77,7 +87,9 @@
       touid: '',
       msg: '',
       hide: false,
-      iframe: 'http://doc2.workerman.net'
+      iframe: 'http://doc2.workerman.net',
+      files: null,
+      token: ''
     },
     methods: {
       connect: function () {
@@ -109,6 +121,18 @@
           console.log(data.info)
         }
       },
+      changeFile (e) {
+        this.files = e.target.files
+      },
+      dataURLtoBlob (dataurl) {
+        var arr = dataurl.split(',')
+        mime = arr[0].match(/:(.*?);/)[1]
+        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n)
+        while (n--) {
+         u8arr[n] = bstr.charCodeAt(n)
+       }
+       return new Blob([u8arr], {type:mime})
+      },
       send: function () {
         this.ws.send(params)
       },
@@ -135,6 +159,22 @@
             }
           })
         }
+      },
+      sendFile () {
+        if (!this.files) return
+        _t = this
+        let formData = new FormData()
+        formData.append('file', this.files[0])
+        $.ajax({
+          method: 'POST',
+          url: '/index/index/qiniuUpload',
+          contentType: false,
+          data: formData,
+          processData: false,
+          success: function (res) {
+            _t.msg = res.key
+          }
+        })
       },
       toggleShow: function () {
         this.hide = !this.hide
